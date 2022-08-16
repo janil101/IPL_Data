@@ -11,7 +11,7 @@ const fs = require("fs");
 const { type } = require("os");
  
 // (B) READ CSV INTO STRING
-var matches_Data = fs.readFileSync("./matches.csv", "utf8");
+var matches_Data = fs.readFileSync("./IPL/matches.csv", "utf8");
  
 // (C) STRING TO ARRAY
 matches_Data = matches_Data.split("\r\n"); // SPLIT ROWS
@@ -19,7 +19,7 @@ for (let i in matches_Data) { // SPLIT COLUMNS
   matches_Data[i] = matches_Data[i].split(",");
 }
 
-var deliveries_Data = fs.readFileSync("./deliveries.csv", "utf8");
+var deliveries_Data = fs.readFileSync("./IPL/deliveries.csv", "utf8");
  
 // (C) STRING TO ARRAY
 deliveries_Data = deliveries_Data.split("\r\n"); // SPLIT ROWS
@@ -113,14 +113,15 @@ for(let i = 1 ; i < deliveries_Data.length; i++){
     if(deliveries_Data[i][0] === bowlers[j]){
       if(economical_bowlers.hasOwnProperty(deliveries_Data[i][8])){
         economical_bowlers[deliveries_Data[i][8]] += Number(deliveries_Data[i][17]);
-        ball_bowled[deliveries_Data[i][8]] = deliveries_Data[i][5] === "1" ? ball_bowled[deliveries_Data[i][8]] + 1 : ball_bowled[deliveries_Data[i][8]];
+        ball_bowled[deliveries_Data[i][8]] += deliveries_Data[i][8] !== deliveries_Data[i+1][8] ? 1 : 0 ;
       }else{
         economical_bowlers[deliveries_Data[i][8]] = Number(deliveries_Data[i][17]);
-        ball_bowled[deliveries_Data[i][8]] = Number(deliveries_Data[i][4]);
+        ball_bowled[deliveries_Data[i][8]] = 0;
       }
     }
   }
 };
+
 for(let key in economical_bowlers){
   // console.log(`${key} : ${economical_bowlers[key]}`);
   economy[`${key}`] = (`${economical_bowlers[key]}`/ `${ball_bowled[key]}`).toFixed(2);
@@ -151,11 +152,13 @@ for(let i = 0; i < matches_Data.length;i++){
 
 var top_Wickets = {};
 for(let i = 1 ; i < deliveries_Data.length; i++){
-  if(deliveries_Data[i][0] in wickets){
-    if(deliveries_Data[i][8] in top_Wickets){
-      top_Wickets[deliveries_Data[i][8]] += deliveries_Data[i][18] !== "" ? 1 : 0 ;
-    }else{
-      top_Wickets[deliveries_Data[i][8]] = deliveries_Data[i][18] !== "" ? 1 : 0 ;
+  for(let j = 0 ; j < wickets.length;j++){
+    if(deliveries_Data[i][0] === wickets[j]){
+      if(top_Wickets.hasOwnProperty(deliveries_Data[i][8])){
+        top_Wickets[deliveries_Data[i][8]] += deliveries_Data[i][18] !== "" ? 1 : 0 ;  
+      }else{
+        top_Wickets[deliveries_Data[i][8]] = deliveries_Data[i][18] !== "" ? 1 : 0 ;
+      }
     }
   }
 };
@@ -178,26 +181,3 @@ Question_2();
 Question_3();
 Question_4();
 Question_5();
-
-
-
-
-
-/*
-let str = String(deliveries_Data[i][0]);
-      if(economical_bowlers.hasOwnProperty()){
-        // economical_bowlers[deliveries_Data[i][8]] = [Number(deliveries_Data[i+1][17])+1,1+1];
-        console.log(economical_bowlers[deliveries_Data[i][8]]);
-      }else{
-        economical_bowlers[deliveries_Data[i][8]] = [Number(deliveries_Data[i][17]),0];
-      }
-    }
-  }
-  // if(deliveries_Data[i][0] in bowlers){
-  //   if(deliveries_Data[i][8] in economical_bowlers){
-  //     economical_bowlers[deliveries_Data[i][8]] = [Number(economical_bowlers[deliveries_Data[i][8]][0]) + Number(deliveries_Data[i][17]) ,
-  //      economical_bowlers[deliveries_Data[i][8]] === economical_bowlers[deliveries_Data[i+1][8]] ? economical_bowlers[deliveries_Data[i][8]] :
-  //      economical_bowlers[deliveries_Data[i][8]][1] + 1 ];
-  //   }else{
-  //     economical_bowlers[deliveries_Data[i][8]] = [Number(deliveries_Data[i][17]),0];
-*/
